@@ -1,8 +1,9 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty,ApiSchema } from '@nestjs/swagger';
 import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
 
 export namespace SignUpDto {
-  export class InputSignUp {
+  @ApiSchema({name:"InputSignUp"})
+  export class Input {
     @ApiProperty({
       example: 'John Doe',
       description: 'Full name of the user',
@@ -44,7 +45,9 @@ export namespace SignUpDto {
     password: string;
   }
 
-  export class OutputSignUp {
+
+  @ApiSchema({name:"OutputSignUp"})
+  export class Output {
     @ApiProperty({
       example: 'John Doe',
       description: 'Full name of the user',

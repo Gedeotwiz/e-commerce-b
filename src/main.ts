@@ -1,32 +1,53 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import mongoose from 'mongoose';
-import { createDefaultAdmin } from './utils/defaul-admin';
+import { createDefaultAdmin } from './__share__/utils/defaul-admin';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   try {
     await mongoose.connect(process.env.DATABASE_URL!);
-    
+
     const app = await NestFactory.create(AppModule);
-    const PORT = process.env.PORT || 3000;
-    await app.listen(PORT);
+
+    app.setGlobalPrefix('api/v1');
+    app.useGlobalPipes(
+      new ValidationPipe({
+        transform: true,
+        whitelist: true,
+        forbidNonWhitelisted: true,
+      }),
+    );
+
+    app.enableCors({
+      origin: ['*'],
+      methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+      credentials: true,
+      allowedHeaders: ['Content-Type', 'Authorization'],
+    });
 
     const config = new DocumentBuilder()
-      .setTitle('E-Commerce API')
-      .setDescription('API documentation for E-Commerce application')
+      .setTitle('E-commerce API')
+      .setDescription('E-commerce application API built with NestJS and MongoDB')
       .setVersion('1.0')
-      .addBearerAuth() 
+      .addTag('Auth')
+      .addBearerAuth()
       .build();
 
     const document = SwaggerModule.createDocument(app, config);
-    SwaggerModule.setup('api', app, document); 
-    
+
+    SwaggerModule.setup('api-docs', app, document, {
+      customSiteTitle: 'E-Commerce API Documentation',
+    });
+
+    const PORT = process.env.PORT || 3000;
+    await app.listen(PORT);
+
     await createDefaultAdmin();
-    console.log('MongoDB connection established successfully');
-    console.log(`Swagger documentation available on http://localhost:${PORT}/api`);
-    console.log(`Server is running on http://localhost:${PORT}`);
+
+    console.log(' MongoDB connection established successfully');
+    console.log(`🚀 Swagger docs available at http://localhost:${PORT}/api-docs`);
   } catch (error) {
     console.error('Failed to bootstrap application:', error);
     process.exit(1);
