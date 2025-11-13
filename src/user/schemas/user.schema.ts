@@ -39,6 +39,12 @@ export class User extends Document {
 
   @Prop({ default: false })
   verfied: boolean;
+
+  @Prop({ type: String, default: null })
+  otp: string | null ;
+
+  @Prop({ type: Date, default: null })
+  otpExpires: Date | null ;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

@@ -4,6 +4,8 @@ import { AuthService } from './auth.service';
 import { User, UserSchema } from 'src/user/schemas/user.schema';
 import { JwtModule } from '@nestjs/jwt';
 import { MongooseModule } from '@nestjs/mongoose';
+import { UserModule } from 'src/user/user.module';
+import { UserService } from 'src/user/user.service';
 
 @Module({
   imports: [
@@ -12,9 +14,10 @@ import { MongooseModule } from '@nestjs/mongoose';
       secret: process.env.JWT_SECRET || 'superSecretKey',
       signOptions: { expiresIn: '1d' },
     }),
+    UserModule,
   ],
 
   controllers: [AuthController],
-  providers: [AuthService],
+  providers: [AuthService, UserService],
 })
 export class AuthModule {}
