@@ -3,10 +3,10 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
 @Schema({ timestamps: true })
 export class Category extends Document {
-  @Prop({ required: true, unique: true })
+  @Prop({ required: true, unique: true ,default:""})
   name: string;
 
-  @Prop({ required: true })
+  @Prop({ required: true ,default:"" })
   image: string;
 
   @Prop({ type: Types.ObjectId, ref: 'Category', default: null })

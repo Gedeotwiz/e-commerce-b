@@ -16,27 +16,29 @@ export class User extends Document {
   @Prop({ required: true })
   address: string;
 
-  @Prop({ default:'english' })
+  @Prop({ default: 'english' })
   languge: string;
 
-  @Prop({ default:null })
+  @Prop({ default: null })
   birthDay: string;
 
-  @Prop({default:'https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg'})
-  image:string
-
-  @Prop({ 
-  type: String,
-  enum: Object.values(UserRole),
-  default: UserRole.GUEST
+  @Prop({
+    default: 'https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg',
   })
-   role: UserRole;
+  image: string;
+
+  @Prop({
+    type: String,
+    enum: Object.values(UserRole),
+    default: UserRole.GUEST,
+  })
+  role: UserRole;
 
   @Prop({ required: true })
   password: string;
 
-  @Prop({default:false})
-  verfied:boolean
+  @Prop({ default: false })
+  verfied: boolean;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

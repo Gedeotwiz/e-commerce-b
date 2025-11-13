@@ -29,7 +29,9 @@ async function bootstrap() {
 
     const config = new DocumentBuilder()
       .setTitle('E-commerce API')
-      .setDescription('E-commerce application API built with NestJS and MongoDB')
+      .setDescription(
+        'E-commerce application API built with NestJS and MongoDB',
+      )
       .setVersion('1.0')
       .addTag('Auth')
       .addBearerAuth()
@@ -47,7 +49,9 @@ async function bootstrap() {
     await createDefaultAdmin();
 
     console.log(' MongoDB connection established successfully');
-    console.log(`🚀 Swagger docs available at http://localhost:${PORT}/api-docs`);
+    console.log(
+      `🚀 Swagger docs available at http://localhost:${PORT}/api-docs`,
+    );
   } catch (error) {
     console.error('Failed to bootstrap application:', error);
     process.exit(1);
