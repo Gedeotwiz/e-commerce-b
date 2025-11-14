@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { User, UserSchema } from '../../user/schemas/user.schema';
+import { User, UserSchema } from '../../schemas/user.schema';
 import bcrypt from 'bcrypt';
 import { UserRole } from 'src/__share__/enum/enum';
 import * as dotenv from 'dotenv';

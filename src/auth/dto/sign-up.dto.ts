@@ -70,5 +70,15 @@ export namespace SignUpDto {
       description: 'User residential address',
     })
     address: string;
+
+    @ApiProperty({
+      example: 'guest',
+    })
+    role: string;
+
+    @ApiProperty({
+      example: 'true or false',
+    })
+    verfied: boolean;
   }
 }
