@@ -3,6 +3,7 @@ import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { CreateSubcategoryDto } from './dto/create-subCategory-dto';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import { IsAdmin } from 'src/__share__/decorator/auth-decorator';
 
 @ApiTags('Category')
 @Controller('category')

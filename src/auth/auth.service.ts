@@ -100,6 +100,31 @@ export class AuthService {
     }
   }
 
+  async verifyEmailToken(token: string): Promise<string> {
+  try {
+    const decoded = this.tokenService.verifyEmailToken(token); 
+    return decoded.email;
+  } catch (error) {
+    throw new BadRequestException('Invalid or expired token');
+  }
+}
+
+async markEmailAsVerified(email: string): Promise<User> {
+  const user = await this.userService.findOneByEmail(email );
+  if (!user) {
+    throw new BadRequestException('User not found');
+  }
+
+  if (user.verfied) {
+    return user; 
+  }
+
+  user.verfied = true;
+  await user.save();
+  return user;
+}
+
+
   async forgotPassword(
     body: ForgotPasswordDto,
   ): Promise<GenericResponse<{ message: string }>> {

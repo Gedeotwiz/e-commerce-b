@@ -1,8 +1,9 @@
-import { Controller, Body, Post } from '@nestjs/common';
+import { Controller, Body, Post,Query,Get } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { LoginDto } from './dto/login.dto';
 import { GenericResponse } from 'src/__share__/dto/generic-response.dto';
+import { BadRequestException } from '@nestjs/common';
 import {
   ForgotPasswordDto,
   ResetPasswordDto,
@@ -49,5 +50,17 @@ export class AuthController {
   @ApiOperation({ summary: 'Resent password' })
   async resent(@Body() body: ResetPasswordDto) {
     return await this.authService.resetPassword(body);
+  }
+
+  @Get('verify-email')
+  async verifyEmail(@Query('token') token: string): Promise<GenericResponse<{ email: string }>> {
+    if (!token) {
+      throw new BadRequestException('Verification token is required');
+    }
+
+    const email = await this.authService.verifyEmailToken(token); 
+    const user = await this.authService.markEmailAsVerified(email);
+    
+    return new GenericResponse('Email verified successfully', { email: user.email });
   }
 }
