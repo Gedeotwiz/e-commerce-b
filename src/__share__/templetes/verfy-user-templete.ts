@@ -60,7 +60,7 @@ export const verifyEmailTemplate = (
                       <a href="https://gira.com/en/home-english/" style="color: #D50057">Website</a>
                     </td>
                     <td width="10%" valign="top" style="text-align: right; padding: 8px; font-family: 'open sans MS', sans-serif; color: #80888d; font-size: 12px;">
-                      <a href="https://gira.com/en/home-english/" style="color: #D50057">LinkedIn</a>
+                      <a href="www.linkedin.com/in/twizerimana-gedeon-151837326" style="color: #D50057">LinkedIn</a>
                     </td>
                     <td width="10%" valign="top" style="text-align: right; padding: 8px; font-family: 'open sans MS', sans-serif; color: #80888d; font-size: 12px;">
                       <a href="https://twitter.com/gira" style="color: #D50057">Twitter</a>

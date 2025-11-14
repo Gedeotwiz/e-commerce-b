@@ -1,33 +1,25 @@
 import { Module } from '@nestjs/common';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { User, UserSchema } from 'src/schemas/user.schema';
+import { UserModule } from 'src/user/user.module'; 
 import { JwtModule } from '@nestjs/jwt';
-import { MongooseModule } from '@nestjs/mongoose';
-import { UserService } from 'src/user/user.service';
 import { EmailService } from 'src/common/mailler';
 import { TokenService } from 'src/common/token-service';
-import { ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
+import { JwtStrategy } from 'src/__share__/utils/jwt-stratege';
+import { RolesGuard } from 'src/__share__/guards/role-guard';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
+    ConfigModule,
+    UserModule,
     JwtModule.register({
       secret: process.env.JWT_SECRET || 'superSecretKey',
       signOptions: { expiresIn: '1d' },
     }),
   ],
-
   controllers: [AuthController],
-
-  providers: [
-    AuthService,
-    UserService,
-    EmailService,
-    TokenService,
-    ConfigService,
-  ],
-
+  providers: [AuthService, EmailService, TokenService,JwtStrategy],
   exports: [AuthService, EmailService, TokenService],
 })
 export class AuthModule {}
