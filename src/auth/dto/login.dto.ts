@@ -1,4 +1,4 @@
-import { ApiProperty,ApiSchema } from '@nestjs/swagger';
+import { ApiProperty, ApiSchema } from '@nestjs/swagger';
 import { IsEmail, IsString } from 'class-validator';
 
 export namespace LoginDto {
@@ -12,7 +12,7 @@ export namespace LoginDto {
     @IsString()
     password: string;
   }
-  
+
   @ApiSchema({ name: 'InputLogin' })
   export class Output {
     @ApiProperty({ example: 'ytftyuhawufhyugtyftretvnknjbjgh' })

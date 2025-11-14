@@ -7,7 +7,7 @@ export namespace CreateSubcategoryDto {
     @IsString()
     @IsNotEmpty()
     name: string;
-    
+
     @ApiProperty()
     @IsString()
     @IsNotEmpty()

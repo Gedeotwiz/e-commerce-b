@@ -3,9 +3,10 @@ import {
   UnauthorizedException,
   BadRequestException,
   NotFoundException,
+  ConflictException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { User } from 'src/user/schemas/user.schema';
+import { User } from 'src/schemas/user.schema';
 import { Model } from 'mongoose';
 import { JwtService } from '@nestjs/jwt';
 import { LoginDto } from './dto/login.dto';
@@ -16,7 +17,12 @@ import {
   VerifyOtpDto,
 } from './dto/password.dto';
 import { UserService } from 'src/user/user.service';
-import { sendOtpEmail } from 'src/common/mailler';
+import { SignUpDto } from './dto/sign-up.dto';
+import { GenericResponse } from 'src/__share__/dto/generic-response.dto';
+import * as jwt from 'jsonwebtoken';
+import { ConfigService } from '@nestjs/config';
+import { TokenService } from 'src/common/token-service';
+import { EmailService } from 'src/common/mailler';
 
 @Injectable()
 export class AuthService {
@@ -25,6 +31,9 @@ export class AuthService {
     private readonly userModel: Model<User>,
     private readonly jwtService: JwtService,
     private readonly userService: UserService,
+    private readonly tokenService: TokenService,
+    private readonly configService: ConfigService,
+    private readonly emailService: EmailService,
   ) {}
 
   async Login(body: LoginDto.Input): Promise<LoginDto.Output> {
@@ -40,42 +49,104 @@ export class AuthService {
     return { token };
   }
 
-  async forgotPassword(body: ForgotPasswordDto) {
+  async sendVerficationEmail(user: User) {
+    const verificationToken = this.tokenService.generateEmailToken(user.email);
+    const clientUrl = this.configService.get<string>('ADMIN_WEB_PORTAL_URL');
+    const verifyEmailLink = `${clientUrl}/en/verify-email?token=${verificationToken}`;
+
+    await this.emailService.sendVerificationEmail(
+      user.email,
+      user.names,
+      verifyEmailLink,
+    );
+  }
+
+  async signUp(body: SignUpDto.Input): Promise<SignUpDto.Output> {
+    const userExist = await this.userService.findOneByEmail(body.email);
+    if (userExist) {
+      throw new ConflictException('User already exist');
+    }
+    const hashedPassword = await bcrypt.hash(body.password, 10);
+    const newUser = {
+      ...body,
+      password: hashedPassword,
+    };
+    const user = await this.userModel.create(newUser);
+    try {
+      await this.sendVerficationEmail(user);
+    } catch (error) {
+      console.error('SIGNUP FAILED:', error);
+      throw new BadRequestException(
+        error.message || 'Failed to send verification email:',
+      );
+    }
+    return {
+      names: user.names,
+      email: user.email,
+      phone: user.phone,
+      address: user.address,
+      role: user.role,
+      verfied: user.verfied,
+    };
+  }
+
+  async verifyToken(token: string): Promise<any> {
+    const secret = process.env.JWT_SECRET || 'mySuperSecretKey';
+    try {
+      const decoded = jwt.verify(token, secret);
+      return decoded;
+    } catch (error) {
+      throw new UnauthorizedException('Invalid token');
+    }
+  }
+
+  async forgotPassword(
+    body: ForgotPasswordDto,
+  ): Promise<GenericResponse<{ message: string }>> {
     const user = await this.userService.findOneByEmail(body.email);
     if (!user) throw new NotFoundException('No account found with this email.');
 
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
-const hashedOtp = await bcrypt.hash(otp, 10);
+    const hashedOtp = await bcrypt.hash(otp, 10);
 
-user.otp = hashedOtp;
-user.otpExpires = new Date(Date.now() + 10 * 60 * 1000);
-await user.save();
+    user.otp = hashedOtp;
+    user.otpExpires = new Date(Date.now() + 10 * 60 * 1000);
+    await user.save();
 
-await sendOtpEmail(user.email, otp);
+    await this.emailService.sendOtpEmail(user.email, otp);
 
-
-    return { message: 'OTP has been sent to your email address.' };
+    return new GenericResponse('OTP has been sent to your email address.');
   }
 
-  async verifyOtp(body: VerifyOtpDto): Promise<{ message: string }> {
+  async verifyOtp(
+    body: VerifyOtpDto,
+  ): Promise<GenericResponse<{ message: string }>> {
     const user = await this.userService.findOneByEmail(body.email);
     if (!user) throw new NotFoundException('No account found with this email.');
 
-    if (!user.otp || !user.otpExpires || user.otpExpires.getTime() < Date.now()) {
-      throw new BadRequestException('OTP expired or not found. Please request a new one.');
+    if (
+      !user.otp ||
+      !user.otpExpires ||
+      user.otpExpires.getTime() < Date.now()
+    ) {
+      throw new BadRequestException(
+        'OTP expired or not found. Please request a new one.',
+      );
     }
 
     const isMatch = await bcrypt.compare(body.otp, user.otp);
-    if (!isMatch) throw new BadRequestException('Invalid OTP. Please try again.');
+    if (!isMatch)
+      throw new BadRequestException('Invalid OTP. Please try again.');
 
-    user.otp ;
+    user.otp;
     user.otpExpires;
     await user.save();
-
-    return { message: 'OTP verified successfully.' };
+    return new GenericResponse('OTP verified successfully.');
   }
 
-  async resetPassword(body: ResetPasswordDto) {
+  async resetPassword(
+    body: ResetPasswordDto,
+  ): Promise<GenericResponse<{ message: string }>> {
     await this.verifyOtp({ email: body.email, otp: body.otp });
 
     const user = await this.userService.findOneByEmail(body.email);
@@ -87,10 +158,10 @@ await sendOtpEmail(user.email, otp);
 
     const hashedPassword = await bcrypt.hash(body.newPassword, 10);
     user.password = hashedPassword;
-    user.otp = null ;
+    user.otp = null;
     user.otpExpires = null;
     await user.save();
 
-    return { message: 'Password reset successful.' };
+    return new GenericResponse('Password reset successful.');
   }
 }

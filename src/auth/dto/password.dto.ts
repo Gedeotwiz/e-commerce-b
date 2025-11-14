@@ -34,5 +34,5 @@ export class ResetPasswordDto {
   @ApiProperty()
   @IsString()
   @MinLength(6)
-  confirmPassword: string;  
+  confirmPassword: string;
 }
