@@ -7,7 +7,7 @@ export const verifyEmailTemplate = (
   <html>
    <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <link rel="shortcut icon" href="${process.env.ADMIN_WEB_PORTAL_URL}/email_assets/gira-logo.png">
+    <link rel="shortcut icon" href="${process.env.ADMIN_WEB_PORTAL_URL}">
     <title>Verify Your Email</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   </head>

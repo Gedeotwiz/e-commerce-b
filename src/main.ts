@@ -21,7 +21,7 @@ async function bootstrap() {
     );
 
     app.enableCors({
-      origin: ['*'],
+      origin: ['http://localhost:3000','https://e-commerce-rho-rust-82.vercel.app/'],
       methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
       credentials: true,
       allowedHeaders: ['Content-Type', 'Authorization'],
