@@ -1,10 +1,12 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Category } from '../schemas/category.schema';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { CreateSubcategoryDto } from './dto/create-subCategory-dto';
 import { GenericResponse } from 'src/__share__/dto/generic-response.dto';
+import { promises } from 'dns';
+import { UpdateCategoryDto } from './dto/update Dto';
 
 @Injectable()
 export class CategoryService {
@@ -68,6 +70,32 @@ export class CategoryService {
     return new GenericResponse('Category Retrieved Successfully!', category);
   }
 
+
+  async deleteCategory(categoryId: string): Promise<GenericResponse<string>> {
+  const category = await this.categoryModel.findById(categoryId).exec();
+  if (!category) {
+    throw new NotFoundException(`Category with ID ${categoryId} not found`);
+  }
+
+  await this.categoryModel.findByIdAndDelete(categoryId);
+
+  return new GenericResponse('delete category be succefully!',categoryId)
+}
+
+async deleteSubCategory(subcategoryId:string) : Promise<GenericResponse<string>>{
+  const subCategory = await this.categoryModel.findById(subcategoryId).exec();
+  if(!subCategory){
+     throw new NotFoundException(`sub category with ${subcategoryId} not found!`)
+  }
+  if(!subCategory.parentCategory){
+     throw new BadRequestException('this category is a not subcategory')
+  }
+  await this.categoryModel.findByIdAndDelete(subcategoryId)
+  return new GenericResponse('SubCategory Deleted Succefuly!',subcategoryId)
+
+}
+
+
   async getSubcategories(
     parentId: string,
   ): Promise<GenericResponse<Category[]>> {
@@ -86,4 +114,39 @@ export class CategoryService {
       subcategories,
     );
   }
+
+  
+  async updateCategory(
+  categoryId: string,
+  updateData: UpdateCategoryDto
+): Promise<GenericResponse<Category>> {
+
+  
+  const category = await this.categoryModel.findById(categoryId).exec();
+  if (!category) {
+    throw new NotFoundException(`Category with ID ${categoryId} not found`);
+  }
+
+  if (updateData.parentCategory) {
+    const parent = await this.categoryModel.findById(updateData.parentCategory).exec();
+    if (!parent) {
+      throw new BadRequestException(`Parent category not found`);
+    }
+
+    if (updateData.parentCategory === categoryId) {
+      throw new BadRequestException(`A category cannot be its own parent`);
+    }
+  }
+
+   await this.categoryModel
+    .findByIdAndUpdate(categoryId, updateData, { new: true })
+    .exec();
+return new GenericResponse<Category>(
+  'Category updated successfully!'
+  
+);
+
 }
+}
+
+

@@ -1,8 +1,9 @@
-import { Body, Controller, Post, Param, Get } from '@nestjs/common';
+import { Body, Controller, Post, Param, Get, Delete, Patch } from '@nestjs/common';
 import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { CreateSubcategoryDto } from './dto/create-subCategory-dto';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import { UpdateCategoryDto } from './dto/update Dto';
 
 @ApiTags('Category')
 @Controller('category')
@@ -32,6 +33,7 @@ export class CategoryController {
       createSubcategoryDto,
     );
   }
+
   @Get(':id')
   @ApiOperation({ summary: 'Get category by is' })
   async getCategoryById(@Param('id') id: string) {
@@ -43,4 +45,29 @@ export class CategoryController {
   async getSubcategories(@Param('parentId') parentId: string) {
     return await this.categoryservice.getSubcategories(parentId);
   }
+
+  @Delete(':id')
+  @ApiOperation({summary:'delete category'})
+  async deleteCategory(@Param('id') id:string){
+    return this.categoryservice.deleteCategory(id)
+  }
+  @Delete('sub/:id')
+  @ApiOperation({summary:'delete subcategory'})
+    async deleteSubCategory(@Param('id')id:string){
+       return this.categoryservice.deleteSubCategory(id)
+    }
+
+  @Patch(':id')
+   @ApiOperation({summary:'update category'})
+async updateCategory(
+  @Param('id') id: string,
+  @Body() updateData: UpdateCategoryDto,
+) {
+  return this.categoryservice.updateCategory(id, updateData);
+}
+
+
+  
+  
+  
 }

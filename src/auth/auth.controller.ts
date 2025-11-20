@@ -12,6 +12,7 @@ import { SignUpDto } from './dto/sign-up.dto';
 
 @ApiTags('Auth')
 @Controller('auth')
+ 
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
@@ -24,7 +25,7 @@ export class AuthController {
     return new GenericResponse('Login successfuly', user);
   }
 
-  @Post()
+  @Post('register')
   @ApiOperation({ summary: 'Registration' })
   async register(
     @Body() body: SignUpDto.Input,

@@ -6,7 +6,7 @@ export class Category extends Document {
   @Prop({ required: true, unique: true, default: '' })
   name: string;
 
-  @Prop({ required: true, default: '' })
+  @Prop({ required: true, default: 'https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg' })
   image: string;
 
   @Prop({ type: Types.ObjectId, ref: 'Category', default: null })

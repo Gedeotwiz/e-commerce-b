@@ -4,6 +4,7 @@ import {
   BadRequestException,
   NotFoundException,
   ConflictException,
+  Body,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { User } from 'src/schemas/user.schema';
@@ -60,8 +61,9 @@ export class AuthService {
       verifyEmailLink,
     );
   }
-
-  async signUp(body: SignUpDto.Input): Promise<SignUpDto.Output> {
+ 
+      
+    async signUp(@Body() body: SignUpDto.Input): Promise<SignUpDto.Output>{
     const userExist = await this.userService.findOneByEmail(body.email);
     if (userExist) {
       throw new ConflictException('User already exist');
@@ -88,7 +90,8 @@ export class AuthService {
       role: user.role,
       verfied: user.verfied,
     };
-  }
+   }
+  
 
   async verifyToken(token: string): Promise<any> {
     const secret = process.env.JWT_SECRET || 'mySuperSecretKey';

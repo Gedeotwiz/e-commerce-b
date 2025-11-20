@@ -11,6 +11,8 @@ async function bootstrap() {
 
     const app = await NestFactory.create(AppModule);
 
+
+
     app.setGlobalPrefix('api/v1');
     app.useGlobalPipes(
       new ValidationPipe({
@@ -20,12 +22,19 @@ async function bootstrap() {
       }),
     );
 
+    // app.enableCors({
+    //   origin: ['*'],
+    //   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+    //   allowedHeaders: ['Content-Type', 'Authorization'],
+    // });
     app.enableCors({
-      origin: ['*'],
-      methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
-      credentials: true,
-      allowedHeaders: ['Content-Type', 'Authorization'],
-    });
+  origin: ['http://localhost:3000','http://192.168.1.163:3000',], // your frontend
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true, // allow cookies or auth headers
+});
+
+
 
     const config = new DocumentBuilder()
       .setTitle('E-commerce API')
