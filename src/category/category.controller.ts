@@ -17,6 +17,7 @@ export class CategoryController {
   }
 
   @Get()
+  @IsAdmin()
   @ApiOperation({ summary: 'Get all category' })
   async getAllCategories() {
     return await this.categoryservice.getAllCategories();
