@@ -51,8 +51,9 @@ export class AuthService {
 
   async sendVerficationEmail(user: User) {
     const verificationToken = this.tokenService.generateEmailToken(user.email);
-    const clientUrl = this.configService.get<string>('ADMIN_WEB_PORTAL_URL');
-    const verifyEmailLink = `${clientUrl}/en/verify-email?token=${verificationToken}`;
+    const clientUrlLocal = this.configService.get<string>('ADMIN_WEB_PORTAL_URL');
+    const clientUrl = this.configService.get<string>('ORGIN_URL')
+    const verifyEmailLink = `${clientUrlLocal || clientUrl}/verifyemail?token=${verificationToken}`;
 
     await this.emailService.sendVerificationEmail(
       user.email,

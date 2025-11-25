@@ -25,7 +25,7 @@ export class AuthController {
     return new GenericResponse('Login successfuly', user);
   }
 
-  @Post()
+  @Post('register')
   @ApiOperation({ summary: 'Registration' })
   async register(
     @Body() body: SignUpDto.Input,
