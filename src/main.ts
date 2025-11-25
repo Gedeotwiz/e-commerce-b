@@ -1,13 +1,13 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import mongoose from 'mongoose';
-import { createDefaultAdmin } from './__share__/utils/defaul-admin';
+// import { createDefaultAdmin } from './__share__/utils/defaul-admin';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   try {
-    await mongoose.connect(process.env.DATABASE_URL!);
+    await mongoose.connect(process.env.DATABASE_URL|| 'mongodb+srv://gedeontwizerimana6:kabeho.123@cluster0.7ulx87j.mongodb.net/e-commerce');
 
     const app = await NestFactory.create(AppModule);
 
@@ -46,7 +46,7 @@ async function bootstrap() {
     const PORT = process.env.PORT || 3000;
     await app.listen(PORT);
 
-    await createDefaultAdmin();
+    // await createDefaultAdmin();
 
     console.log(' MongoDB connection established successfully');
     console.log(
